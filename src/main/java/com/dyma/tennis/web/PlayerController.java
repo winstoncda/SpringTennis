@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dyma.tennis.HealthCheck;
 import com.dyma.tennis.Player;
+import com.dyma.tennis.PlayerList;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,7 +34,7 @@ public class PlayerController {
         })
         @GetMapping("/players")
         public List<Player> getAllPlayers() {
-            return Collections.emptyList();
+            return PlayerList.ALL;
         }
 
         @Operation(summary = "Get Player by Last Name", description = "Get a player by their last name")
@@ -45,7 +45,10 @@ public class PlayerController {
         })
         @GetMapping("/players/{lastName}")
         public Player getByLastName(@PathVariable("lastName") String lastName) {
-            return null;
+            return PlayerList.ALL.stream()
+                    .filter(player -> player.lastName().equalsIgnoreCase(lastName))
+                    .findFirst()
+                    .orElse(null);
         }
 
         @Operation(summary = "Create Player", description = "Create a new player")
