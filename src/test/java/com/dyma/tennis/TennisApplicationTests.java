@@ -1,8 +1,9 @@
 package com.dyma.tennis;
 
 import com.dyma.tennis.repository.HealthCheckRepository;
-import com.dyma.tennis.rest.HealthCheckController;
 import com.dyma.tennis.service.HealthCheckService;
+import com.dyma.tennis.web.HealthCheckController;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
