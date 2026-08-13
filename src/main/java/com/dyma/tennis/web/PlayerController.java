@@ -17,10 +17,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.validation.Valid;
 
 @Tag(name="Tennis Players API")
@@ -49,7 +49,7 @@ public class PlayerController {
             return PlayerList.ALL.stream()
                     .filter(player -> player.lastName().equalsIgnoreCase(lastName))
                     .findFirst()
-                    .orElse(null);
+                    .orElseThrow();
         }
 
         @Operation(summary = "Create Player", description = "Create a new player")
