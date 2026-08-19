@@ -18,4 +18,11 @@ public class PlayerService {
                 .collect(Collectors.toList());
     }
 
+    public Player getByLastName(String lastName) {
+            return PlayerList.ALL.stream()
+                    .filter(player -> player.lastName().equalsIgnoreCase(lastName))
+                    .findFirst()
+                    .orElseThrow(() ->new PlayerNotFoundException(lastName));
+    }
+
 }

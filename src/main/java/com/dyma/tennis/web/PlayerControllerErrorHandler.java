@@ -12,12 +12,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.dyma.tennis.service.PlayerNotFoundException;
+
 @RestControllerAdvice
 public class PlayerControllerErrorHandler {
 
-        @ExceptionHandler(NoSuchElementException.class)
+        @ExceptionHandler(PlayerNotFoundException.class)
         @ResponseStatus(HttpStatus.NOT_FOUND)
-        public void handleNoElementException() {}
+        public Map<String, String> handlePlayerNotFoundException(PlayerNotFoundException ex) {
+            return Map.of("message", ex.getMessage());
+        }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
         @ResponseStatus(HttpStatus.BAD_REQUEST)

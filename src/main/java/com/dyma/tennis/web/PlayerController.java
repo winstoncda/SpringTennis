@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dyma.tennis.Player;
 import com.dyma.tennis.PlayerList;
+import com.dyma.tennis.service.PlayerNotFoundException;
 import com.dyma.tennis.service.PlayerService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,14 +48,18 @@ public class PlayerController {
         @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Player",
                 content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Player.class))})
+                    schema = @Schema(implementation = Player.class))}),
+        @ApiResponse(responseCode = "404", description = "Player not found",
+                content = {@Content(mediaType = "application/json",
+                    schema = @Schema(implementation = Player.class))}),
+                
         })
         @GetMapping("/players/{lastName}")
         public Player getByLastName(@PathVariable("lastName") String lastName) {
             return PlayerList.ALL.stream()
                     .filter(player -> player.lastName().equalsIgnoreCase(lastName))
                     .findFirst()
-                    .orElseThrow();
+                    .orElseThrow(() -> new PlayerNotFoundException(lastName));
         }
 
         @Operation(summary = "Create Player", description = "Create a new player")
