@@ -31,5 +31,5 @@ public class PlayerList {
         LocalDate.of(1987, Month.MAY, 22),
         new Rank(4, 2000));
 
-    public static final List<Player> ALL = Arrays.asList(RAFAEL_NADAL, NOVAK_DJOKOVIC, ROGER_FEDERER, ANDY_MURRAY);
+    public static final List<Player> ALL = Arrays.asList(ROGER_FEDERER, ANDY_MURRAY, RAFAEL_NADAL, NOVAK_DJOKOVIC);
 }
