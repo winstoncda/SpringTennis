@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dyma.tennis.Player;
 import com.dyma.tennis.PlayerList;
+import com.dyma.tennis.PlayerToRegister;
 import com.dyma.tennis.service.PlayerNotFoundException;
 import com.dyma.tennis.service.PlayerService;
 
@@ -66,11 +67,11 @@ public class PlayerController {
         @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Created Player",
                 content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Player.class))})
+                    schema = @Schema(implementation = PlayerToRegister.class))})
         })
         @PostMapping("/players")
-        public Player createPlayer(@RequestBody @Valid Player player) {
-            return player;
+        public Player createPlayer(@RequestBody @Valid PlayerToRegister playerToRegister) {
+            return playerService.createPlayer(playerToRegister);
         }
 
         @Operation(summary = "Update a Player", description = "Update an existing player")
