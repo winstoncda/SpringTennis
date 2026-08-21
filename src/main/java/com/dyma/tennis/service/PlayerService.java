@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.dyma.tennis.Player;
 import com.dyma.tennis.PlayerList;
-import com.dyma.tennis.PlayerToRegister;
+import com.dyma.tennis.PlayerToSave;
 
 @Service
 public class PlayerService {
@@ -16,8 +16,10 @@ public class PlayerService {
     public List<Player> getAllPlayers() {
         return PlayerList.ALL.stream()
                 .sorted(Comparator.comparing(player -> player.rank().position()))
-                .collect(Collectors.toList());
+                .toList();
     }
+
+
 
     public Player getByLastName(String lastName) {
             return PlayerList.ALL.stream()
@@ -26,11 +28,33 @@ public class PlayerService {
                     .orElseThrow(() ->new PlayerNotFoundException(lastName));
     }
 
-    public Player createPlayer(PlayerToRegister playerToRegister) {
-        RankingCalculator rankingCalculator = new RankingCalculator(PlayerList.ALL, playerToRegister);
-        List<Player> updatedPlayers = rankingCalculator.getNewPlayersRanking();
-        return updatedPlayers.stream()
-                .filter(player -> player.lastName().equalsIgnoreCase(playerToRegister.lastName()))
+
+    public Player create(PlayerToSave playerToSave) {
+            return getPlayerNewRanking(PlayerList.ALL, playerToSave);
+    }
+
+
+    public Player update(PlayerToSave playerToSave) {
+            getByLastName(playerToSave.lastName());
+
+            List<Player> playersWithoutPlayerToUpdate = PlayerList.ALL.stream()
+                .filter(player -> !player.lastName().equals(playerToSave.lastName()))
+                .toList();
+
+            RankingCalculator rankingCalculator = new RankingCalculator(playersWithoutPlayerToUpdate, playerToSave);
+            List<Player> players = rankingCalculator.getNewPlayersRanking();
+
+            return players.stream()
+                .filter(player -> player.lastName().equals(playerToSave.lastName()))
+                .findFirst().get();
+    }   
+
+    private Player getPlayerNewRanking(List<Player> existingPlayers, PlayerToSave playerToSave) {
+            RankingCalculator rankingCalculator = new RankingCalculator(existingPlayers, playerToSave);
+            List<Player> players = rankingCalculator.getNewPlayersRanking();
+
+            return players.stream()
+                .filter(player -> player.lastName().equals(playerToSave.lastName()))
                 .findFirst().get();
     }
 

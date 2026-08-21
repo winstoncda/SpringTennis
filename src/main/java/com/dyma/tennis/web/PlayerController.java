@@ -13,9 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dyma.tennis.Player;
 import com.dyma.tennis.PlayerList;
-import com.dyma.tennis.PlayerToRegister;
+import com.dyma.tennis.PlayerToSave;
 import com.dyma.tennis.service.PlayerNotFoundException;
 import com.dyma.tennis.service.PlayerService;
+import com.dyma.tennis.service.RankingCalculator;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,10 +41,14 @@ public class PlayerController {
                 content = {@Content(mediaType = "application/json",
                     array = @ArraySchema(schema = @Schema(implementation = Player.class)))})
         })
+
         @GetMapping("/players")
         public List<Player> getAllPlayers() {
             return playerService.getAllPlayers();
         }
+
+
+
 
         @Operation(summary = "Get Player by Last Name", description = "Get a player by their last name")
         @ApiResponses(value = {
@@ -55,35 +60,47 @@ public class PlayerController {
                     schema = @Schema(implementation = Player.class))}),
                 
         })
+
         @GetMapping("/players/{lastName}")
-        public Player getByLastName(@PathVariable("lastName") String lastName) {
+        public Player getByLastName(@PathVariable String lastName) {
             return PlayerList.ALL.stream()
                     .filter(player -> player.lastName().equalsIgnoreCase(lastName))
                     .findFirst()
                     .orElseThrow(() -> new PlayerNotFoundException(lastName));
         }
 
+
+
+
         @Operation(summary = "Create Player", description = "Create a new player")
         @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Created Player",
                 content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = PlayerToRegister.class))})
+                    schema = @Schema(implementation = PlayerToSave.class))})
         })
+
         @PostMapping("/players")
-        public Player createPlayer(@RequestBody @Valid PlayerToRegister playerToRegister) {
-            return playerService.createPlayer(playerToRegister);
+        public Player createPlayer(@RequestBody @Valid PlayerToSave playerToSave) {
+            return playerService.create(playerToSave);
         }
 
-        @Operation(summary = "Update a Player", description = "Update an existing player")
+
+        @Operation(summary = "Updates a player", description = "Updates a player")
         @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Updated Player",
-                content = {@Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Player.class))})
+            @ApiResponse(responseCode = "200", description = "Updated player",
+                    content = {@Content(mediaType = "application/json",
+                        schema = @Schema(implementation = PlayerToSave.class))}),
+            @ApiResponse(responseCode = "404", description = "Player with specified last name was not found.",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Error.class))})
         })
+
         @PutMapping("/players")
-        public Player updatePlayer(@RequestBody @Valid Player player) {
-            return player;
+        public Player updatePlayer(@RequestBody @Valid PlayerToSave playerToSave) {
+            return playerService.update(playerToSave);
         }
+
+
 
         @Operation(summary = "Delete a Player", description = "Delete an existing player")
         @ApiResponses(value = {

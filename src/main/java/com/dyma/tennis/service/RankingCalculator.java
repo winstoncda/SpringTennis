@@ -5,15 +5,15 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.dyma.tennis.Player;
-import com.dyma.tennis.PlayerToRegister;
+import com.dyma.tennis.PlayerToSave;
 import com.dyma.tennis.Rank;
 
 public class RankingCalculator {
 
     private final List<Player> currentPlayersRanking;
-    private final PlayerToRegister playerToRegister;
+    private final PlayerToSave playerToRegister;
 
-    public RankingCalculator(List<Player> currentPlayersRanking, PlayerToRegister playerToRegister) {
+    public RankingCalculator(List<Player> currentPlayersRanking, PlayerToSave playerToRegister) {
         this.currentPlayersRanking = currentPlayersRanking;
         this.playerToRegister = playerToRegister;
     }
