@@ -2,6 +2,7 @@ package com.dyma.tennis.service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.dyma.tennis.Player;
 import com.dyma.tennis.PlayerList;
 import com.dyma.tennis.PlayerToSave;
 import com.dyma.tennis.Rank;
+import com.dyma.tennis.data.PlayerEntity;
 import com.dyma.tennis.data.PlayerRepository;
 
 @Service
@@ -27,10 +29,13 @@ public class PlayerService {
 
 
     public Player getByLastName(String lastName) {
-            return PlayerList.ALL.stream()
-                    .filter(player -> player.lastName().equalsIgnoreCase(lastName))
-                    .findFirst()
-                    .orElseThrow(() ->new PlayerNotFoundException(lastName));
+        Optional<PlayerEntity> player = playerRepository.findOneByLastNameIgnoreCase(lastName);
+        if (player.isEmpty()) {
+            throw new PlayerNotFoundException(lastName);
+        }
+        PlayerEntity playerEntity = player.get();
+        return new Player(playerEntity.getFirstName(), playerEntity.getLastName(), playerEntity.getBirthDate(), new Rank(playerEntity.getRank(), playerEntity.getPoints()));
+
     }
 
 
