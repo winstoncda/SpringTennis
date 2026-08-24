@@ -3,17 +3,23 @@ package com.dyma.tennis.service;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dyma.tennis.Player;
 import com.dyma.tennis.PlayerList;
 import com.dyma.tennis.PlayerToSave;
+import com.dyma.tennis.Rank;
+import com.dyma.tennis.data.PlayerRepository;
 
 @Service
 public class PlayerService {
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
     public List<Player> getAllPlayers() {
-        return PlayerList.ALL.stream()
+        return playerRepository.findAll().stream().map(playerEntity -> new Player(playerEntity.getFirstName(), playerEntity.getLastName(), playerEntity.getBirthDate(), new Rank(playerEntity.getRank(), playerEntity.getPoints())))
                 .sorted(Comparator.comparing(player -> player.rank().position()))
                 .toList();
     }
