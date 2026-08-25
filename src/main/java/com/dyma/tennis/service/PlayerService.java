@@ -47,7 +47,7 @@ public class PlayerService {
         };
 
         PlayerEntity playerEntity = new PlayerEntity(
-                playerToSave.lastName(), 
+            playerToSave.lastName(), 
             playerToSave.firstName(), 
             playerToSave.dateOfBirth(), 
             playerToSave.points(), 
@@ -64,7 +64,21 @@ public class PlayerService {
 
 
     public Player update(PlayerToSave playerToSave) {
-        return null;
+        Optional<PlayerEntity> player = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
+        if (player.isEmpty()) {
+            throw new PlayerNotFoundException(playerToSave.lastName());
+        }
+
+        player.get().setFirstName(playerToSave.firstName());
+        player.get().setBirthDate(playerToSave.dateOfBirth());
+        player.get().setPoints(playerToSave.points());
+        playerRepository.save(player.get());
+
+        RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
+        List<PlayerEntity> updatedPlayers = rankingCalculator.getNewPlayersRanking();
+        playerRepository.saveAll(updatedPlayers);
+
+        return getByLastName(playerToSave.lastName());
     }
 
     public void delete(String lastName) {
