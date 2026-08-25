@@ -63,10 +63,7 @@ public class PlayerController {
 
         @GetMapping("/players/{lastName}")
         public Player getByLastName(@PathVariable String lastName) {
-            return PlayerList.ALL.stream()
-                    .filter(player -> player.lastName().equalsIgnoreCase(lastName))
-                    .findFirst()
-                    .orElseThrow(() -> new PlayerNotFoundException(lastName));
+            return playerService.getByLastName(lastName);
         }
 
 
