@@ -82,7 +82,15 @@ public class PlayerService {
     }
 
     public void delete(String lastName) {
+        Optional<PlayerEntity> player = playerRepository.findOneByLastNameIgnoreCase(lastName);
+        if (player.isEmpty()) {
+            throw new PlayerNotFoundException(lastName);
+        }
+        playerRepository.delete(player.get());
 
+        RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
+        List<PlayerEntity> updatedPlayers = rankingCalculator.getNewPlayersRanking();
+        playerRepository.saveAll(updatedPlayers);
     }
 
 }
