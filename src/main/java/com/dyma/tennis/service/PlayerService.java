@@ -39,50 +39,36 @@ public class PlayerService {
     }
 
 
-    public Player create(PlayerToSave playerToSave) {
-            // Calculer le nouveau classement en ajoutant le joueur
-            RankingCalculator rankingCalculator = new RankingCalculator(PlayerList.ALL, playerToSave);
-            PlayerList.ALL = rankingCalculator.getNewPlayersRanking();
 
-            // Retourner le joueur créé
-            return PlayerList.ALL.stream()
-                .filter(player -> player.lastName().equals(playerToSave.lastName()))
-                .findFirst()
-                .orElseThrow();
+    public Player create(PlayerToSave playerToSave) {
+        Optional<PlayerEntity> existingPlayer = playerRepository.findOneByLastNameIgnoreCase(playerToSave.lastName());
+        if (existingPlayer.isPresent()) {
+            throw new PlayerAlreadyExistsException(playerToSave.lastName());
+        };
+
+        PlayerEntity playerEntity = new PlayerEntity(
+                playerToSave.lastName(), 
+            playerToSave.firstName(), 
+            playerToSave.dateOfBirth(), 
+            playerToSave.points(), 
+            9999999);
+
+        playerRepository.save(playerEntity);
+
+        RankingCalculator rankingCalculator = new RankingCalculator(playerRepository.findAll());
+        List<PlayerEntity> updatedPlayers = rankingCalculator.getNewPlayersRanking();
+        playerRepository.saveAll(updatedPlayers);
+
+        return getByLastName(playerToSave.lastName());
     }
 
 
     public Player update(PlayerToSave playerToSave) {
-            // Vérifier que le joueur existe
-            getByLastName(playerToSave.lastName());
-
-            // Retirer l'ancien joueur de la liste
-            List<Player> playersWithoutPlayerToUpdate = PlayerList.ALL.stream()
-                .filter(player -> !player.lastName().equals(playerToSave.lastName()))
-                .toList();
-
-            // Recalculer le classement avec les nouvelles données du joueur
-            RankingCalculator rankingCalculator = new RankingCalculator(playersWithoutPlayerToUpdate, playerToSave);
-            PlayerList.ALL = rankingCalculator.getNewPlayersRanking();
-
-            // Retourner le joueur mis à jour
-            return PlayerList.ALL.stream()
-                .filter(player -> player.lastName().equals(playerToSave.lastName()))
-                .findFirst()
-                .orElseThrow();
+        return null;
     }
 
     public void delete(String lastName) {
-            // Vérifier que le joueur existe (lance une exception si non trouvé)
-            Player playerToDelete = getByLastName(lastName);
 
-            // Filtrer le joueur à supprimer de la liste
-            List<Player> playersWithoutDeleted = PlayerList.ALL.stream()
-                .filter(player -> !player.lastName().equals(playerToDelete.lastName()))
-                .toList();
-
-            // Recalculer les rangs avec RankingCalculator
-            PlayerList.ALL = RankingCalculator.recalculateRanks(playersWithoutDeleted);
     }
 
 }
