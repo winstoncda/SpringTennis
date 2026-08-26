@@ -20,6 +20,10 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
 
+    public PlayerService(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
+    }
+
     public List<Player> getAllPlayers() {
         return playerRepository.findAll().stream().map(playerEntity -> new Player(playerEntity.getFirstName(), playerEntity.getLastName(), playerEntity.getBirthDate(), new Rank(playerEntity.getRank(), playerEntity.getPoints())))
                 .sorted(Comparator.comparing(player -> player.rank().position()))
